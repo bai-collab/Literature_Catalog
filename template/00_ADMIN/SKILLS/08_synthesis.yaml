@@ -1,0 +1,41 @@
+name: "synthesis"
+version: "1.0"
+purpose: "跨文獻比較、理論/方法矩陣、Evidence Map與Research Gap。"
+
+source_priority:
+  - "FULL_ANALYSIS優先。"
+  - "QUICK_READ只能做初篩與線索，不用來承載強跨文獻結論。"
+  - "需要原始數字/方法時回到原文，不以二手摘要替代。"
+
+procedure:
+  - "先查Catalog取得候選Paper_ID、Status、Role與Drive位置。"
+  - "實際讀取最相關FULL_ANALYSIS/EVIDENCE；多篇時交叉閱讀。"
+  - "將研究依理論、方法、樣本、介入/系統、指標、結果、限制標準化。"
+  - "分成Support / Contrary / Mixed / Not Studied，不強行合併衝突。"
+  - "若來源衝突，依原始性、日期、方法品質與baseline品質評估；無法裁決標❗。"
+  - "Gap只能由多篇共同缺漏、結果衝突、方法限制、外部效度不足或未控制變項建立。"
+
+comparison_rules:
+  - "不同研究的score/accuracy/cost若benchmark、模型、版本或protocol不同，不做直接排名。"
+  - "跨文獻比較需標記是否matched/comparable。"
+  - "單篇未研究X只能寫『本文未處理X』，不得推成『尚無研究』。"
+  - "作者結論與我的跨文獻整合分開。"
+
+outputs:
+  - theory_matrix
+  - method_matrix
+  - evidence_map
+  - support_contrary_mixed_map
+  - research_gap
+  - unresolved_conflicts
+  - next_search_targets
+
+research_gap_contract:
+  required:
+    - "支持Gap的至少2篇以上相關文獻或明確說明目前證據不足。"
+    - "指出Gap類型：theory/method/population/context/measurement/conflict/external validity。"
+    - "禁止使用『沒找到=不存在』。"
+
+save:
+  target: ["80_SYNTHESIS", "90_PROJECT_OUTPUT"]
+  rule: "只有使用者明確要求保存或既定流程要求時才寫入。"
