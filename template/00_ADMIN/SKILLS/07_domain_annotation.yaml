@@ -1,0 +1,48 @@
+name: "domain_annotation"
+version: "1.0"
+purpose: "自動標註、內容分析與AI coding研究的領域分析模組。"
+
+analyze:
+  - label_schema
+  - unit_of_analysis
+  - human_coders
+  - ai_coders_or_models
+  - gold_standard
+  - training_or_few_shot_examples
+  - adjudication
+  - class_balance
+  - inter_rater_agreement
+  - kappa
+  - f1
+  - precision
+  - recall
+  - confusion_matrix
+  - calibration
+  - error_analysis
+  - external_validation
+
+method_checks:
+  - "Gold Standard如何建立？是否由單一研究者自行決定？"
+  - "人工coder是否接受訓練、是否盲測、是否有adjudication？"
+  - "一致性指標是否適合資料型態與類別分布？"
+  - "Macro/Micro/Weighted F1是否清楚區分？"
+  - "是否只報overall accuracy而掩蓋minority class失敗？"
+  - "LLM是否與Gold Standard存在資料洩漏或prompt alignment風險？"
+  - "不同模型/提示/temperature/重複執行的變異是否報告？"
+
+claim_rules:
+  - "高agreement不等於標籤具有理論效度。"
+  - "高F1不等於可取代人工coding，除非研究設計實際驗證此用途。"
+  - "AI與單一coder一致不等於與Gold Standard一致。"
+  - "若class imbalance嚴重，不得只以accuracy判定優劣。"
+  - "沒有held-out/external set時，generalization結論降級。"
+
+output_contract:
+  required:
+    - annotation_pipeline
+    - gold_standard_quality
+    - agreement_metrics
+    - model_performance
+    - error_patterns
+    - validity_limits
+    - dissertation_implications
