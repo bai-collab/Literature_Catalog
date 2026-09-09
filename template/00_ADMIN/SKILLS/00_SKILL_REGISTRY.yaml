@@ -1,0 +1,75 @@
+version: "1.4"
+name: "Literature Library Skill Registry"
+root: "00_ADMIN/SKILLS"
+principle: >
+  Project YAML只保留核心不變規則、Storage contract、Registry loader與Human Gate。
+  本 Registry 是所有 Skill discovery、routing、trigger、purpose 與 dependencies 的唯一來源。
+  Project YAML 不保存個別 Skill 名稱或路由；新增/修改 Skill 只需更新 Drive Skill 與本 Registry。
+
+routing:
+  intake:
+    file: "01_intake.yaml"
+    type: task
+    purpose: "文獻入館、查重、分類、Paper_ID與館藏定位。"
+    trigger: ["處理這篇", "收錄這篇", "新文獻", "學術PDF"]
+  quick_read:
+    file: "02_quick_read.yaml"
+    type: task
+    purpose: "Stage 1 Research Fit Quick Read 與 Human Gate 前初篩；輸出 HTML 正式原檔 + PDF 閱讀版。"
+    trigger: ["處理這篇", "淺讀", "Research Fit"]
+  full_analysis:
+    file: "03_full_analysis.yaml"
+    type: task
+    purpose: "Stage 2完整研究分析、Evidence Table與論文用途判讀。"
+    trigger: ["值得", "升級", "深入", "完整分析", "這篇重要"]
+  experiment_audit:
+    file: "04_experiment_audit.yaml"
+    type: conditional
+    purpose: "重建實驗條件、baseline與confound，限制因果與比較性結論。"
+    trigger_if: ["experiment", "benchmark", "ablation", "comparison", "system evaluation", "model comparison"]
+  agent_harness:
+    file: "05_domain_agent_harness.yaml"
+    type: domain
+    purpose: "Agent、Multi-Agent、Harness、orchestration、memory與tool-use專項分析。"
+    trigger_if: ["agent", "multi-agent", "harness", "orchestration", "memory", "tool use"]
+  education:
+    file: "06_domain_education.yaml"
+    type: domain
+    purpose: "教育研究之介入、學習成效、角色、測量、倫理與外部效度分析。"
+    trigger_if: ["education", "teacher", "student", "learning", "instruction", "school"]
+  annotation:
+    file: "07_domain_annotation.yaml"
+    type: domain
+    purpose: "人工/AI標註、Gold Standard、Kappa、F1與分類品質分析。"
+    trigger_if: ["annotation", "coding", "label", "kappa", "F1", "precision", "recall"]
+  synthesis:
+    file: "08_synthesis.yaml"
+    type: task
+    purpose: "跨文獻比較、反方、Evidence Map、理論/方法矩陣與Research Gap。"
+    trigger: ["比較", "研究缺口", "理論矩陣", "方法矩陣", "Evidence Map", "找反方"]
+  library_write:
+    file: "09_library_write.yaml"
+    type: write
+    purpose: "執行 Drive 館藏與 Catalog 寫入；Quick Read 以 HTML source + PDF view 雙連結呈現並驗證成功狀態。"
+    trigger_if: ["需寫入Drive", "更新總書目", "建立Paper Folder", "移動館藏"]
+  skill_builder:
+    file: "10_skill_builder.yaml"
+    type: meta
+    trigger: ["新增 skill", "建立 skill", "做一個 skill", "修改 skill", "更新 skill", "擴充 skill", "新增能力"]
+    purpose: "建立/更新可重用 Skill，並同步維護 Registry。"
+    dependencies: ["00_SKILL_REGISTRY.yaml"]
+
+routing_rules:
+  - "每次需要文獻工作流、Skill管理、綜整或領域分析時，先實際讀取最新版 Registry；不得依對話記憶使用舊 routing。"
+  - "先選 primary task/meta Skill，再依 trigger_if 加入 conditional/domain/write Skill。"
+  - "只載入最少必要 Skill；不得預先讀取全部 Skill。"
+  - "dependencies 由 Registry 決定；發現循環依賴時停止並標記 ❌ SKILL_DEPENDENCY_CYCLE。"
+  - "新增或修改 Skill 後只更新 Drive Skill 與 Registry；不得因此要求修改 Project YAML。"
+  - "只有需求改變 Project core invariant、storage contract、Registry loader 或 Human Gate 時，才標記 PROJECT_CORE_CHANGE_REQUIRED。"
+
+loading_rules:
+  - "先讀最新版 Registry，再 route，再載入最少必要 Skill。"
+  - "Stage 0通常載入intake+library_write；Stage 1載入quick_read；Stage 2載入full_analysis，並按研究設計/領域再載入experiment_audit與domain skill。"
+  - "Skill衝突時：Project core > Registry > task/meta Skill > conditional/domain Skill。"
+  - "未成功讀取 Registry 時標記 ⏳ REGISTRY_UNAVAILABLE 並停止 Skill routing；未成功讀取 Skill 時標記 ⏳ SKILL_UNAVAILABLE，不得憑記憶補完。"
+  - "完成後遵守各Skill的stop_condition，不自行升級流程。"
