@@ -1,0 +1,94 @@
+name: "full_analysis"
+version: "1.0"
+purpose: "Stage 2：Human Gate核准後，建立可追溯、可比較、可反駁的完整研究分析。"
+
+precondition:
+  - "Status=APPROVED或使用者明確說值得/升級/完整分析。"
+  - "未核准不得執行。"
+
+load_dependencies:
+  always: ["04_experiment_audit.yaml if empirical/comparative", "09_library_write.yaml"]
+  conditional: ["05_domain_agent_harness.yaml", "06_domain_education.yaml", "07_domain_annotation.yaml"]
+
+analysis_order:
+  - paper_identity
+  - research_fit
+  - purpose_rq_hypotheses
+  - theory
+  - method
+  - experimental_comparison_audit
+  - claim_evidence_matrix
+  - findings
+  - author_interpretation
+  - researcher_interpretation
+  - alternative_explanations
+  - counter_evidence
+  - limitations
+  - missing_experiment
+  - dissertation_use
+  - final_judgment
+
+core_rules:
+  - "先重建研究設計與比較結構，再解讀結果。"
+  - "Observed Result、Author Interpretation、My Interpretation分開。"
+  - "有cost/token/latency數值!=證明降低；架構簡化!=效能改善。"
+  - "不同model/budget/prompt/tools/memory/runtime造成的比較，未控制前不得歸因給單一方法。"
+  - "作者宣稱better/efficient/superior/Pareto/robust時，必查baseline與比較條件。"
+  - "所有重要數字保留Page/Table/Figure；無法定位則降低結論強度。"
+
+claim_evidence_matrix:
+  columns: ["Claim", "Claim Type", "Evidence", "Comparison Type", "Baseline Quality", "Confounds", "Page/Table/Figure", "Strength", "Allowed Wording", "Forbidden Wording"]
+  claim_types: ["Theory", "Architecture", "Performance", "Cost", "Token", "Latency", "Reliability", "Learning Outcome", "User Outcome", "Safety", "Generalization"]
+
+causal_gate:
+  trigger_words: ["提升", "改善", "降低", "減少", "增加", "優於", "導致", "造成", "有效", "影響"]
+  checks:
+    - "是否有直接對照？"
+    - "主要差異是否只有目標變項？"
+    - "是否量化？"
+    - "資料、樣本與評估流程是否一致？"
+    - "是否存在重大替代解釋？"
+    - "研究設計是否允許因果推論？"
+  rule: "未通過時改寫為『作者觀察到』『在此設定下結果較高/低』『與…相關』或標記❌ unsupported。"
+
+counter_evidence:
+  required:
+    - "主動找不支持作者趨勢的benchmark/condition/model。"
+    - "檢查Abstract/Discussion是否比Results語氣更強。"
+    - "負向或mixed結果不得省略。"
+
+missing_experiment:
+  required_fields: ["Claimed/Implied Proposition", "Existing Evidence", "Missing Control", "Ideal Experiment", "Current Evidence Boundary"]
+
+output_contract:
+  files:
+    - "{PaperID}_FULL_ANALYSIS.md"
+    - "{PaperID}_EVIDENCE.md"
+  full_sections:
+    - "Paper Identity＋APA7"
+    - "Research Fit"
+    - "Purpose/RQ/Hypotheses"
+    - "Theory"
+    - "Method"
+    - "Experimental Comparison Structure"
+    - "Claim–Evidence Matrix"
+    - "Findings：結果/作者解釋/我的判讀/替代解釋"
+    - "Counter-evidence"
+    - "Limitations"
+    - "Missing Experiment"
+    - "可引用短句"
+    - "Dissertation Use"
+    - "Final Judgment"
+  final_judgment: ["Research Fit", "Evidence Strength", "Baseline Quality", "Causal Evidence", "External Validity", "Role", "最值得引用3點", "最重要反方3點", "最大Evidence Gap", "最容易誤讀Claim", "最安全表述", "絕對不可推出的一句話"]
+
+quality_gate:
+  - "是否知道每組實驗真正改變什麼？"
+  - "是否把cross-model/confounded comparison誤當方法效果？"
+  - "是否把architecture simplification誤當performance/cost/token/latency improvement？"
+  - "是否把相關寫成因果？"
+  - "是否每個核心Claim都有Allowed Wording？"
+  - "是否指出最重要missing experiment？"
+  - "任一核心Gate失敗則先修正，不得存檔。"
+
+save: "驗證通過後存兩檔並更新Catalog Status=FULL_ANALYSIS與連結。"
+stop_condition: "完成Stage 2與Catalog更新後停止。"
