@@ -1,0 +1,164 @@
+name: "skill_builder"
+version: "1.1"
+purpose: >
+  設計、建立、驗證與更新 Literature Library Skill，
+  維持命名、觸發條件、依賴、輸出契約與 Registry 的一致性。
+  先判斷應新增 Skill 還是擴充既有 Skill，避免重複與功能膨脹。
+  Registry 是 Skill discovery/routing 的唯一來源；一般 Skill 變動不得要求修改 Project YAML。
+
+trigger:
+  - "新增 skill"
+  - "建立 skill"
+  - "做一個 skill"
+  - "修改 skill"
+  - "更新 skill"
+  - "擴充 skill"
+  - "新增能力"
+
+inputs:
+  - requested_capability
+  - existing_skill_registry
+  - skills_folder_listing
+  - related_existing_skills
+
+procedure:
+  - inspect_registry
+  - inspect_skills_folder
+  - identify_related_skills
+  - decide_create_or_extend
+  - define_scope_and_contract
+  - assign_next_available_number_if_new
+  - draft_yaml_skill
+  - run_quality_gate
+  - save_or_update_skill
+  - update_registry_manifest
+  - verify_project_yaml_not_required
+  - reread_skill_and_registry
+  - report_verified_result
+
+decision_gate:
+  create_new_if:
+    - "能力具有獨立目的、獨立 trigger 與可驗證 output contract。"
+    - "加入既有 Skill 會造成責任混雜或不必要常駐內容。"
+  extend_existing_if:
+    - "新需求只是既有 Skill 的同一責任範圍。"
+    - "可用最小修改完成且不破壞既有 output contract。"
+  reject_or_reframe_if:
+    - "只是一次性內容，不具可重用程序。"
+    - "與既有 Skill 高度重複。"
+    - "應屬 Project core invariant，而非按需能力。"
+
+required_schema:
+  - name
+  - version
+  - purpose
+  - trigger_or_trigger_if
+  - inputs
+  - procedure
+  - output_contract
+  - failure_conditions
+  - stop_condition
+
+registry_manifest_entry:
+  required:
+    - key
+    - file
+    - type
+    - purpose
+    - trigger_or_trigger_if
+  optional:
+    - dependencies
+  allowed_types: ["task", "conditional", "domain", "write", "meta"]
+
+optional_schema:
+  - dependencies
+  - evidence_rules
+  - validation
+  - domain
+  - forbidden_actions
+  - examples
+
+naming:
+  pattern: "{NN}_{snake_case}.yaml"
+  rules:
+    - "新建前先列出 SKILLS 資料夾與 Registry，取得下一個未使用序號。"
+    - "不得覆蓋既有檔案。"
+    - "領域模組優先命名為 domain_<topic>。"
+    - "meta-skill 必須明確標示其管理範圍。"
+
+dependency_rules:
+  - "依賴既有 Skill 時，Registry 與 Skill 內都應可辨識依賴關係。"
+  - "避免循環依賴。"
+  - "若兩個 Skill 經常必須一起載入，評估是否應合併或建立 orchestration Skill。"
+  - "Project core > Registry > task Skill > domain Skill > meta-skill 建議。"
+
+quality_gate:
+  - "是否與既有 Skill 重複？"
+  - "是否維持單一職責？"
+  - "Trigger 是否精確，避免過度啟動？"
+  - "Inputs 是否真的可取得？"
+  - "Procedure 是否是可執行步驟，而非抽象口號？"
+  - "Output contract 是否明確且可驗證？"
+  - "Failure condition 是否覆蓋工具失敗、來源不足與寫入失敗？"
+  - "Stop condition 是否明確？"
+  - "是否錯把應屬 Project core 的 invariant 放入 Skill？"
+  - "是否錯把領域規則塞進通用 Skill？"
+  - "是否已在 Registry 建立完整 manifest entry（file/type/purpose/trigger/dependencies）？"
+  - "是否遵守最小必要修改？"
+
+output_contract:
+  required:
+    - action_type
+    - skill_name
+    - file_name
+    - purpose
+    - triggers
+    - dependencies
+    - validation_result
+    - registry_update_result
+    - project_yaml_change_required
+    - verified_drive_location
+  action_type_options:
+    - CREATED
+    - UPDATED
+    - EXTENDED_EXISTING
+    - REJECTED_AS_DUPLICATE
+    - REFRAMED_AS_CORE_RULE
+
+project_yaml_policy:
+  default: "DO_NOT_MODIFY"
+  rule: >
+    新增、修改、擴充或刪除一般 Skill 時，只修改該 Skill 與 00_SKILL_REGISTRY.yaml；
+    Project YAML 不保存個別 Skill 名稱、trigger、purpose 或 dependencies，因此不需同步修改。
+  core_change_only_if:
+    - "改變全域 evidence invariant"
+    - "改變 storage/source-of-truth contract"
+    - "改變 Registry loader/discovery 機制"
+    - "改變 Human Gate 或全域安全/失敗政策"
+  if_core_change: >
+    不自動修改 Project YAML；輸出 REFRAMED_AS_CORE_RULE 與 PROJECT_CORE_CHANGE_REQUIRED，
+    清楚列出建議修改內容，由使用者決定是否更新 Project Instructions。
+
+write_policy:
+  - "建立或修改前必須讀取 Registry。"
+  - "更新既有 Skill 前必須先讀取完整內容。"
+  - "只做最小必要修改，不刪除無關規則。"
+  - "新 Skill 必須存入 00_ADMIN/SKILLS。"
+  - "建立/更新成功後必須同步修改 00_SKILL_REGISTRY.yaml 的 manifest/routing entry。"
+  - "一般 Skill 變動禁止修改或要求同步修改 Project YAML。"
+  - "寫入後必須重新讀取 Skill 與 Registry 驗證。"
+  - "未實際寫入成功不得宣稱完成。"
+
+failure_conditions:
+  skill_overlap: "⚠️ SKILL_OVERLAP：已有 Skill 足以承擔此能力，優先擴充或拒絕重複建立。"
+  unclear_scope: "⏳ SKILL_SCOPE_UNCLEAR：無法形成單一職責與明確 output contract。"
+  dependency_cycle: "❌ SKILL_DEPENDENCY_CYCLE：不得建立循環依賴。"
+  save_failed: "⏳ SKILL_SAVE_FAILED：Skill 未成功寫入。"
+  registry_failed: "⏳ REGISTRY_NOT_UPDATED：Skill 已寫入但 Registry manifest/routing 未同步成功。"
+  core_change_required: "⚠️ PROJECT_CORE_CHANGE_REQUIRED：需求涉及 Project core，不應偽裝成一般 Skill 更新。"
+  verification_failed: "⏳ SKILL_VERIFY_FAILED：寫入後重新讀取不一致。"
+
+stop_condition: >
+  只有 Skill 檔案與 00_SKILL_REGISTRY.yaml 都成功寫入，
+  並經重新讀取確認檔名、內容、type、purpose、trigger、依賴與路徑一致後才停止。
+  一般 Skill 工作完成時 project_yaml_change_required 必須為 false。
