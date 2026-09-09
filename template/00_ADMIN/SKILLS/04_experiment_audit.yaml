@@ -1,0 +1,99 @@
+name: "experiment_audit"
+version: "1.0"
+purpose: "重建實驗比較結構，防止把confounded comparison、數值報告或架構差異誤解為方法/因果效果。"
+
+trigger_if:
+  - experiment
+  - benchmark
+  - ablation
+  - model_comparison
+  - system_comparison
+  - comparative_evaluation
+
+procedure:
+  - identify_all_conditions
+  - extract_each_condition
+  - classify_each_comparison
+  - audit_baseline_integrity
+  - identify_confounds
+  - run_claim_gate
+  - identify_missing_control
+
+condition_fields:
+  - condition_name
+  - agent_architecture
+  - harness_or_system
+  - model
+  - model_version
+  - reasoning_effort
+  - prompt_or_policy
+  - tools
+  - memory
+  - skill_or_strategy
+  - dataset_or_task
+  - sample_size_or_runs
+  - token_budget
+  - time_budget
+  - compute_or_runtime
+  - metric
+  - result
+  - page_table_figure
+
+comparison_types:
+  controlled:
+    rule: "核心條件相同，只改目標變項。"
+  ablation:
+    rule: "移除/替換特定模組；只能支持此設定下該模組的貢獻。"
+  cross_model:
+    rule: "Model不同；不得把差異單獨歸因於harness/prompt/architecture。"
+  cross_system:
+    rule: "System/Harness不同；若model/prompt/tools/memory/budget/runtime任一核心條件不同，標⚠️ confounded。"
+  historical:
+    rule: "數據來自不同研究/版本/時間；只可描述數值差異，不得直接稱優於。"
+  descriptive_architecture:
+    rule: "Agent數、code lines、prompt lines、communication等；可支持架構簡化，不支持cost/token/latency/performance改善。"
+
+baseline_integrity:
+  compare_fields: ["dataset", "N/runs", "model", "model_version", "reasoning_effort", "prompt", "tools", "memory", "token_budget", "time_budget", "runtime", "metric", "evaluation_protocol"]
+  ratings:
+    HIGH: "核心條件高度匹配。"
+    MEDIUM: "少量差異但仍可有限比較。"
+    LOW: "存在重大confound。"
+    NONE: "沒有真正對照baseline。"
+  rule: "LOW/NONE不得產生強比較結論。"
+
+claim_gate:
+  claims: ["提升", "改善", "降低", "減少", "增加", "優於", "更有效", "導致", "造成", "節省", "更可靠"]
+  checks:
+    - "有直接baseline嗎？"
+    - "只有目標變項改變嗎？"
+    - "結果有量化嗎？"
+    - "評估協定一致嗎？"
+    - "重大confound已排除嗎？"
+    - "研究設計允許因果推論嗎？"
+  verdict:
+    strong: "可使用受限比較語言。"
+    moderate: "只能寫『在此設定下較高/低』或『與…相關』。"
+    weak: "只能寫『作者觀察到/提出』。"
+    none: "❌ unsupported；不得建立該結論。"
+
+output_contract:
+  required:
+    - experimental_condition_matrix
+    - comparison_map
+    - baseline_quality_for_each_core_claim
+    - confounds
+    - allowed_claims
+    - forbidden_claims
+    - missing_experiment
+  matrix_columns: ["Condition", "Agent", "Harness", "Model", "Prompt", "Tools", "Memory", "Skill", "Budget", "Dataset", "N/Runs", "Metric", "Result"]
+
+critical_rules:
+  - "有成本數值 != 成本降低。"
+  - "有token數值 != token節省。"
+  - "有latency數值 != latency降低。"
+  - "程式碼較少/Agent較少 != API成本較低。"
+  - "score較高 != 方法造成提升。"
+  - "作者寫Pareto frontier時，必須辨認frontier由哪些實際condition構成，以及是否存在外部matched baseline。"
+
+stop_condition: "未完成比較矩陣與baseline audit前，不得進入performance/cost/causal interpretation。"
