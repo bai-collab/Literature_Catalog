@@ -1,0 +1,61 @@
+version: "1.0"
+name: "Literature Library Drive Scaffold"
+
+root:
+  placeholder: "<USER_GOOGLE_DRIVE_ROOT_URL>"
+  rule: >
+    使用者先建立自己的空白 Google Drive 根資料夾；
+    初始化程序只能在該使用者指定的根資料夾內建立系統結構。
+
+folders:
+  - "00_ADMIN"
+  - "00_ADMIN/SKILLS"
+  - "01_INBOX"
+  - "10_LIBRARY"
+  - "80_SYNTHESIS"
+  - "90_PROJECT_OUTPUT"
+  - "98_REVIEW_LATER"
+  - "99_ARCHIVE"
+
+admin_files:
+  catalog:
+    path: "00_ADMIN/00_總書目索引_Literature_Catalog"
+    type: "google_spreadsheet"
+    template: "template/catalog_template.yaml"
+
+  skills:
+    path: "00_ADMIN/SKILLS"
+    type: "google_docs_or_text_files"
+    source: "template/00_ADMIN/SKILLS"
+
+initialization_rules:
+  - "先檢查目標根資料夾是否可讀寫。"
+  - "建立前先列出目標根資料夾內容。"
+  - "同名資料夾已存在時不得重建或刪除。"
+  - "Catalog 已存在時不得用空白模板覆寫。"
+  - "Registry 或 Skill 已存在時不得覆寫；應回報 existing/missing。"
+  - "只補建立缺少項目。"
+  - "不得複製來源 Drive 的任何館藏資料、PDF、分析成果或使用者資料。"
+  - "建立完成後重新列出並驗證所有必要項目。"
+
+required_final_structure:
+  admin:
+    - "00_ADMIN/00_總書目索引_Literature_Catalog"
+    - "00_ADMIN/SKILLS/00_SKILL_REGISTRY.yaml"
+    - "00_ADMIN/SKILLS/01_intake.yaml"
+    - "00_ADMIN/SKILLS/02_quick_read.yaml"
+    - "00_ADMIN/SKILLS/03_full_analysis.yaml"
+    - "00_ADMIN/SKILLS/04_experiment_audit.yaml"
+    - "00_ADMIN/SKILLS/05_domain_agent_harness.yaml"
+    - "00_ADMIN/SKILLS/06_domain_education.yaml"
+    - "00_ADMIN/SKILLS/07_domain_annotation.yaml"
+    - "00_ADMIN/SKILLS/08_synthesis.yaml"
+    - "00_ADMIN/SKILLS/09_library_write.yaml"
+    - "00_ADMIN/SKILLS/10_skill_builder.yaml"
+  library:
+    - "01_INBOX"
+    - "10_LIBRARY"
+    - "80_SYNTHESIS"
+    - "90_PROJECT_OUTPUT"
+    - "98_REVIEW_LATER"
+    - "99_ARCHIVE"
