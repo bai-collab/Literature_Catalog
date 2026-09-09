@@ -1,0 +1,40 @@
+name: "intake"
+version: "1.0"
+purpose: "Stage 0：新文獻查重、識別、分類、分配ID與建立館藏紀錄。"
+
+inputs:
+  - "學術PDF或官方全文/書目來源"
+  - "00_總書目索引_Literature_Catalog"
+  - "RLC分類表"
+
+procedure:
+  - "讀取Title、Authors、Year、Venue、DOI、Official URL、document type；來源未明示則標記❓。"
+  - "查重順序：DOI → exact title → title+first author；搜尋命中不等於重複，需核對實際紀錄。"
+  - "exact duplicate：沿用既有Paper_ID，不新建紀錄、不重複存檔。"
+  - "same-study new version：原則上沿用Paper_ID並記錄preprint/conference/journal關係；不確定則⏳ POSSIBLE_DUPLICATE。"
+  - "新文獻：讀取總書目最大Paper_ID後+1；永久唯一、不回收。"
+  - "依研究核心問題查RLC分類表，設定1個Primary Class與0–3個Secondary Classes；無法可靠分類用990。"
+  - "建立Call Number：RLC-{PrimaryClass}-{Year}-{FirstAuthor}-{PaperID}。"
+  - "建立Paper Folder：{PaperID}_{PrimaryClass}_{FirstAuthor}_{Year}_{ShortTitle}。"
+  - "原始PDF永不覆寫；先入01_INBOX，再由library_write移至10_LIBRARY正式路徑。"
+  - "新增總書目紀錄，初始Status=INBOX。"
+
+output_contract:
+  required:
+    - paper_identity
+    - duplicate_status
+    - paper_id
+    - primary_class
+    - secondary_classes
+    - call_number
+    - target_folder
+    - catalog_status
+  evidence_rule: "每個識別欄位都必須可追溯到原文/官方來源/總書目；不得猜DOI、年份、作者。"
+
+failure_conditions:
+  drive_unavailable: "⏳ ACCESS_UNAVAILABLE"
+  source_incomplete: "⏳ SOURCE_INCOMPLETE"
+  catalog_failed: "⏳ CATALOG_NOT_UPDATED"
+  possible_duplicate: "⏳ POSSIBLE_DUPLICATE"
+
+stop_condition: "完成Stage 0後進入quick_read；不得直接進Full Analysis。"
