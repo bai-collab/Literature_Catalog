@@ -1,0 +1,49 @@
+name: "domain_education"
+version: "1.0"
+purpose: "教育研究領域分析模組；只在教育/學習/教師/學生研究載入。"
+
+analyze:
+  - education_level
+  - subject_domain
+  - participants_and_roles
+  - learning_context
+  - intervention
+  - comparison_or_control
+  - duration_and_dose
+  - teacher_role
+  - student_role
+  - technology_or_ai_role
+  - learning_outcomes
+  - affective_outcomes
+  - behavioral_process_data
+  - measurement_tools
+  - reliability_and_validity
+  - implementation_fidelity
+  - ethics_privacy_equity
+
+method_checks:
+  - "樣本來源、分派方式、前測差異、attrition是否報告？"
+  - "介入組與對照組除了目標介入外還差哪些條件？"
+  - "學習成效是直接測量、教師評分、自陳還是系統代理指標？"
+  - "量表信效度是否適用於本研究族群？"
+  - "若為AI介入，Model/Prompt/版本/使用頻率/教師介入是否可重現？"
+  - "顯著差異是否同時具有effect size與教育實質意義？"
+
+claim_rules:
+  - "態度/接受度不得當成學習成效。"
+  - "短期任務表現不得直接外推長期學習。"
+  - "教師知覺不得直接代表學生實際成效。"
+  - "學生自陳使用經驗不得當成系統log證據。"
+  - "非隨機分派或組間條件不等時，因果語言降級。"
+  - "AI產出品質提升不得直接等同學習提升。"
+
+output_contract:
+  required:
+    - education_context
+    - intervention_logic
+    - outcome_evidence
+    - measurement_quality
+    - implementation_risks
+    - ethics_and_equity
+    - external_validity
+    - dissertation_implications
