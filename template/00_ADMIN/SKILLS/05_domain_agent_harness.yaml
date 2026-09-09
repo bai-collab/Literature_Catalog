@@ -1,0 +1,53 @@
+name: "domain_agent_harness"
+version: "1.0"
+purpose: "Agent/Multi-Agent/Harness論文的領域分析模組；只在相關研究載入。"
+
+analyze:
+  - role_definition
+  - autonomy_level
+  - agent_count
+  - orchestration
+  - inter_agent_communication
+  - shared_state
+  - context_management
+  - memory
+  - tool_use
+  - skill_abstraction
+  - critique_or_self_correction
+  - recovery
+  - termination
+  - runtime
+  - sandbox
+  - security
+  - observability
+  - benchmark
+  - token
+  - cost
+  - latency
+
+architecture_matrix:
+  columns: ["Dimension", "Baseline", "Proposed", "Directly Measured?", "Evidence Location", "Allowed Interpretation"]
+  required_rows: ["Agent count", "Communication", "State/Memory", "Tools/Skills", "Code size", "Token", "Cost", "Latency", "Score/Accuracy", "Reliability"]
+
+special_rules:
+  - "Skill/capability與Agent角色分開：固定功能≠獨立Agent。"
+  - "Single-Agent vs Multi-Agent論點必須先載入experiment_audit。"
+  - "Agent數下降只能直接支持架構變化；若token/cost/latency未直接測量，標❓而非推測改善。"
+  - "Framework功能比較與benchmark效能比較分開。"
+  - "Shared state、memory、context、tool execution、termination、sandbox視為獨立設計變項。"
+  - "若作者把多代理功能重構為skill/harness primitive，逐項建立原架構→新架構mapping，不推論未測效益。"
+
+counter_questions:
+  - "多代理是否真的必要，還是角色只是固定skill？"
+  - "單代理是否因context集中而產生新的負擔或single point of failure？"
+  - "效能提升能否與model/prompt/tool/budget變化分離？"
+  - "是否存在協作、多觀點或private state使Multi-Agent仍合理？"
+
+output_contract:
+  required:
+    - agent_architecture_summary
+    - architecture_matrix
+    - evidence_backed_advantages
+    - evidence_backed_tradeoffs
+    - unsupported_common_inferences
+    - dissertation_design_implications
