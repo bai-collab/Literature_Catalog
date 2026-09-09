@@ -1,0 +1,179 @@
+version: "1.0"
+name: "00_總書目索引_Literature_Catalog"
+type: "google_spreadsheet_template"
+locale: "zh_TW"
+timezone: "Asia/Taipei"
+
+privacy:
+  copy_existing_catalog_rows: false
+  include_personal_information: false
+  include_source_drive_ids_or_urls: false
+  rule: >
+    此模板只保存欄位、分類、代碼與一般說明；
+    初始化時「總書目」只能建立標題列，不得搬移任何既有館藏資料列。
+
+sheets:
+  總書目:
+    frozen_rows: 1
+    columns:
+      - Paper_ID
+      - Call_Number
+      - Primary_Class
+      - Secondary_Classes
+      - Status
+      - Role
+      - Title
+      - Authors
+      - First_Author
+      - Year
+      - Journal_or_Conference
+      - DOI
+      - Official_URL
+      - Keywords
+      - Research_Topic
+      - Research_Design
+      - Sample_or_Dataset
+      - AI_Model_or_System
+      - Related_RQ
+      - Research_Fit_1_to_5
+      - Evidence_Strength
+      - Core_Finding
+      - Main_Limitation
+      - Source_PDF_Link
+      - Quick_Read_Source_Link
+      - Quick_Read_Link
+      - Full_Analysis_Link
+      - Added_Date
+      - Last_Updated
+      - Notes
+    data_rows: []
+
+  RLC分類表:
+    frozen_rows: 1
+    columns: ["Class", "Name", "Level", "Parent"]
+    rows:
+      - ["000", "研究方法與學術工作", "主類", ""]
+      - ["010", "文獻回顧、系統性回顧與後設分析", "子類", "000"]
+      - ["020", "研究設計、實驗與準實驗", "子類", "000"]
+      - ["030", "統計分析", "子類", "000"]
+      - ["040", "質性研究與內容分析", "子類", "000"]
+      - ["050", "信效度、一致性與測量", "子類", "000"]
+      - ["060", "學術寫作、APA、引用與研究倫理", "子類", "000"]
+      - ["070", "研究工具、重現性與研究工作流", "子類", "000"]
+      - ["100", "學習科學與教育理論", "主類", ""]
+      - ["110", "自我調整學習 SRL", "子類", "100"]
+      - ["120", "鷹架與教學支持", "子類", "100"]
+      - ["130", "智慧教學系統 ITS", "子類", "100"]
+      - ["140", "論證與對話學習", "子類", "100"]
+      - ["150", "臆測、探究與知識建構", "子類", "100"]
+      - ["160", "協作學習", "子類", "100"]
+      - ["170", "認知負荷、學習困難與迷思", "子類", "100"]
+      - ["180", "動機、情意與學習投入", "子類", "100"]
+      - ["200", "生成式 AI 與大型語言模型", "主類", ""]
+      - ["210", "LLM 能力與評估", "子類", "200"]
+      - ["220", "Prompt Engineering", "子類", "200"]
+      - ["230", "RAG、Memory 與知識庫", "子類", "200"]
+      - ["240", "Tool Use 與 Function Calling", "子類", "200"]
+      - ["250", "Multimodal AI", "子類", "200"]
+      - ["260", "AI Safety、Guardrails 與治理", "子類", "200"]
+      - ["270", "效率、推論、成本與模型路由", "子類", "200"]
+      - ["280", "LLM 評測基準", "子類", "200"]
+      - ["290", "其他 GenAI 架構", "子類", "200"]
+      - ["300", "AI Agent、Multi-Agent 與 Harness", "主類", ""]
+      - ["310", "Single-Agent", "子類", "300"]
+      - ["320", "Multi-Agent Systems", "子類", "300"]
+      - ["330", "Agent Harness 與 Orchestration", "子類", "300"]
+      - ["340", "Inter-Agent Communication", "子類", "300"]
+      - ["350", "Shared State、Memory 與 Context", "子類", "300"]
+      - ["360", "Evaluation、Critique 與 Self-Correction", "子類", "300"]
+      - ["370", "Runtime、Sandbox 與安全執行", "子類", "300"]
+      - ["380", "MCP、ACP 與 Agent Protocol", "子類", "300"]
+      - ["390", "Agent Benchmark 與長任務評估", "子類", "300"]
+      - ["400", "人工智慧與教育", "主類", ""]
+      - ["410", "AI Tutor 與智慧輔導", "子類", "400"]
+      - ["420", "GenAI 融入教學與學習", "子類", "400"]
+      - ["430", "教師 AI 素養與採用", "子類", "400"]
+      - ["440", "個人化與適性學習", "子類", "400"]
+      - ["450", "AI 評量、回饋與自動評分", "子類", "400"]
+      - ["460", "AI 教育倫理、隱私與治理", "子類", "400"]
+      - ["470", "AI 課程與教學設計", "子類", "400"]
+      - ["480", "學生與教師對 AI 的知覺、態度與接受度", "子類", "400"]
+      - ["500", "數學教育", "主類", ""]
+      - ["510", "數學臆測", "子類", "500"]
+      - ["520", "數學證明與論證", "子類", "500"]
+      - ["530", "數學問題解決與 Polya", "子類", "500"]
+      - ["540", "比例、比率與百分率", "子類", "500"]
+      - ["550", "國小數學", "子類", "500"]
+      - ["560", "數學迷思概念與學習困難", "子類", "500"]
+      - ["570", "數學對話與推理", "子類", "500"]
+      - ["580", "科技融入數學教育", "子類", "500"]
+      - ["600", "學習分析與教育資料科學", "主類", ""]
+      - ["610", "Sequential Analysis / GSEQ", "子類", "600"]
+      - ["620", "ENA / SNA", "子類", "600"]
+      - ["630", "Process Mining", "子類", "600"]
+      - ["640", "NLP 與教育文本分析", "子類", "600"]
+      - ["650", "GenAI 自動標註與 Coding", "子類", "600"]
+      - ["660", "Multimodal Learning Analytics", "子類", "600"]
+      - ["670", "教育資料視覺化", "子類", "600"]
+      - ["680", "自動標註一致性與模型評估", "子類", "600"]
+      - ["700", "AI 軟體開發與 Coding Agents", "主類", ""]
+      - ["710", "Coding Agents", "子類", "700"]
+      - ["720", "AI IDE、CLI 與開發環境", "子類", "700"]
+      - ["730", "AI 軟體工程評估", "子類", "700"]
+      - ["740", "自動測試、Debug 與 Repair", "子類", "700"]
+      - ["750", "程式碼品質與資安", "子類", "700"]
+      - ["760", "Human-AI Programming", "子類", "700"]
+      - ["770", "Long-running Autonomous Development", "子類", "700"]
+      - ["800", "系統、工具與數位工作流", "主類", ""]
+      - ["810", "UI / UX 與介面", "子類", "800"]
+      - ["820", "知識管理", "子類", "800"]
+      - ["830", "Workflow Automation", "子類", "800"]
+      - ["840", "Browser / Computer Use Agent", "子類", "800"]
+      - ["850", "Cloud、Deployment 與 Infrastructure", "子類", "800"]
+      - ["860", "Observability 與 Monitoring", "子類", "800"]
+      - ["870", "資料安全、權限與隱私", "子類", "800"]
+      - ["900", "跨領域、參考與待分類", "主類", ""]
+      - ["910", "Survey、Overview 與綜述型資料", "子類", "900"]
+      - ["920", "政策、標準與產業報告", "子類", "900"]
+      - ["930", "Dataset 與 Benchmark 資源", "子類", "900"]
+      - ["980", "跨領域研究", "子類", "900"]
+      - ["990", "待分類", "子類", "900"]
+
+  代碼表:
+    frozen_rows: 1
+    columns: ["Type", "Code", "Meaning", "Usage"]
+    rows:
+      - ["Status", "INBOX", "尚未閱讀", "新進文獻"]
+      - ["Status", "QUICK_READ", "完成淺讀，等待判斷", "Stage 1"]
+      - ["Status", "APPROVED", "使用者認為值得深入", "Human Gate 通過"]
+      - ["Status", "FULL_ANALYSIS", "完成完整分析", "Stage 2"]
+      - ["Status", "CORE", "核心文獻", "研究主線"]
+      - ["Status", "SUPPORTING", "重要支持文獻", "研究支援"]
+      - ["Status", "BACKGROUND", "背景文獻", "背景脈絡"]
+      - ["Status", "REVIEW_LATER", "目前不急", "稍後處理"]
+      - ["Status", "REJECTED", "目前不納入研究主線", "保留原檔"]
+      - ["Role", "CORE", "核心", "直接支持研究"]
+      - ["Role", "SUPPORTING", "支持", "補強證據"]
+      - ["Role", "METHOD", "方法", "研究設計依據"]
+      - ["Role", "THEORY", "理論", "理論基礎"]
+      - ["Role", "CONTRARY", "反方", "相反或挑戰證據"]
+      - ["Role", "BACKGROUND", "背景", "脈絡資訊"]
+      - ["Role", "REFERENCE", "參考", "工具或資源"]
+      - ["Evidence", "✅", "論文明確支持", "直接證據"]
+      - ["Evidence", "⚠️", "部分支持或合理推論", "降低結論強度"]
+      - ["Evidence", "⏳", "尚待查證", "待補來源"]
+      - ["Evidence", "❓", "論文未提供", "不得補完"]
+      - ["Evidence", "❌", "論文明確否定", "反證"]
+      - ["Evidence", "❗", "來源或結果衝突", "保留衝突"]
+
+  README:
+    columns: ["項目", "說明"]
+    rows:
+      - ["用途", "私人研究圖書館總書目；查找館藏時先查總書目，再開啟原始 PDF 或分析檔。"]
+      - ["Paper_ID", "全館唯一，格式 P0001；封存後也不得回收編號。"]
+      - ["索書號", "RLC-{class}-{year}-{first_author}-{paper_id}"]
+      - ["分類", "一篇文獻一個 Primary Class，可有 0–3 個 Secondary Classes；原始 PDF 不重複存放。"]
+      - ["流程", "INBOX → QUICK_READ HTML → 人工判斷 → FULL_ANALYSIS → CORE/SUPPORTING/BACKGROUND 等角色。"]
+      - ["子分類資料夾", "按需建立；第一次有論文歸入該子類時再建立，以避免大量空資料夾。"]
+      - ["正式紀錄", "Google Drive 館藏與本總書目是正式紀錄；聊天記憶只作工作脈絡。"]
+      - ["自動化", "每次新文獻進入時：查重→Paper_ID→分類→HTML淺讀→更新總書目；通過 Human Gate 後才做完整分析。"]
