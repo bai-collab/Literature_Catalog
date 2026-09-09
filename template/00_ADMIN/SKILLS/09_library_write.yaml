@@ -1,0 +1,73 @@
+name: "library_write"
+version: "1.3"
+purpose: "所有 Google Drive 館藏寫入、移動、命名與 Catalog 更新的保守寫入 Skill；Quick Read 採 HTML 正式原檔 + PDF 閱讀版雙 artifact。"
+
+storage:
+  source_of_truth:
+    paper: "Google Drive"
+    catalog: "00_ADMIN/00_總書目索引_Literature_Catalog"
+  folders:
+    admin: "00_ADMIN"
+    inbox: "01_INBOX"
+    library: "10_LIBRARY"
+    synthesis: "80_SYNTHESIS"
+    output: "90_PROJECT_OUTPUT"
+    review_later: "98_REVIEW_LATER"
+    archive: "99_ARCHIVE"
+
+write_rules:
+  - "不得宣稱已存檔、移動、更新，除非對應Drive/Sheets write action成功。"
+  - "原始PDF永不覆寫。"
+  - "新增前先確認目標路徑/檔名是否存在，避免覆蓋。"
+  - "更新既有檔案前先讀取現有內容/metadata；做最小必要修改。"
+  - "不得刪除或覆蓋無關內容。"
+  - "Paper_ID永久唯一、不回收；重複文獻不得新建ID。"
+  - "同篇PDF跨主題不複製，以Secondary Classes表示。"
+  - "任何Stage完成狀態以Catalog實際寫入成功為準。"
+
+paper_paths:
+  call_number: "RLC-{PrimaryClass}-{Year}-{FirstAuthor}-{PaperID}"
+  paper_folder: "{PaperID}_{PrimaryClass}_{FirstAuthor}_{Year}_{ShortTitle}"
+  pdf: "{PaperID}_SOURCE_{FirstAuthor}_{Year}_{ShortTitle}.pdf"
+  quick: "{PaperID}_QUICK_READ.html"
+  quick_view: "{PaperID}_QUICK_READ_VIEW.pdf"
+  full: "{PaperID}_FULL_ANALYSIS.md"
+  evidence: "{PaperID}_EVIDENCE.md"
+
+catalog_updates:
+  INBOX: ["Paper_ID", "Call_Number", "Primary_Class", "Secondary_Classes", "Status", "Title", "Authors", "First_Author", "Year", "Venue", "DOI", "Official_URL", "Source_PDF_Link", "Added_Date", "Last_Updated"]
+  QUICK_READ: ["Quick_Read_Source_Link", "Quick_Read_Link", "Research_Fit_1_to_5", "Evidence_Strength", "Core_Finding", "Main_Limitation", "Status", "Last_Updated"]
+  FULL_ANALYSIS: ["Full_Analysis_Link", "Role", "Status", "Last_Updated"]
+
+catalog_link_format:
+  canonical_order: ["Source_PDF_Link", "Quick_Read_Source_Link", "Quick_Read_Link", "Full_Analysis_Link"]
+  fields: ["Source_PDF_Link", "Quick_Read_Source_Link", "Quick_Read_Link", "Full_Analysis_Link"]
+  rule: "Catalog 中的館藏檔案欄不得只存裸網址；必須使用 Google Sheets HYPERLINK(url, filename)，讓儲存格顯示實際檔名並保留可點擊連結。"
+  display_name_rule: "顯示文字必須等於 Drive 中實際檔名；不得自行縮寫、改名或只顯示 Paper_ID。"
+  empty_rule: "尚無對應檔案時保持空白，不建立虛假連結。"
+  quick_read_source_rule: "Quick_Read_Source_Link 指向 {PaperID}_QUICK_READ.html 的 Drive 標準 view/webViewLink；此欄是正式來源檔索引，不承擔網頁渲染功能。"
+  quick_read_view_rule: "Quick_Read_Link 必須指向 {PaperID}_QUICK_READ_VIEW.pdf 的 Drive 標準 view/webViewLink；此 PDF 必須由同一 HTML 直接渲染，不得獨立改寫內容。"
+  non_quick_rule: "Source_PDF_Link 與 Full_Analysis_Link 維持 Drive 標準 view/webViewLink。"
+
+move_rules:
+  - "新PDF先放01_INBOX；完成分類後移至10_LIBRARY/主類/子類/Paper Folder。"
+  - "若子類資料夾不存在，可按RLC分類表建立。"
+  - "REVIEW_LATER/REJECTED/BACKGROUND依既有館藏政策保留，不刪原始資料。"
+
+verification:
+  - "寫入後重新讀取/列出目標folder或Catalog row確認。"
+  - "對 Source_PDF_Link、Quick_Read_Source_Link、Quick_Read_Link、Full_Analysis_Link，驗證儲存格顯示文字等於 Drive 實際檔名，且 hyperlink 指向同一 Drive 檔案。"
+  - "Quick_Read_Source_Link 必須指向 text/html 正式原檔；Quick_Read_Link 必須指向 application/pdf 的 QUICK_READ_VIEW.pdf。"
+  - "驗證 QUICK_READ_VIEW.pdf 與 HTML 來自同一 Paper_ID，且 PDF 可由 Drive 正常預覽；若缺少 PDF view，不得把 HTML source 連結冒充 Quick_Read_Link。"
+  - "若 Catalog 僅顯示裸 URL，視為未完成格式驗證並修正為 HYPERLINK(url, filename)。"
+  - "回報repository不適用；必須回報Drive folder/path、操作類型、Status與實際連結。"
+
+failure_policy:
+  drive_unavailable: "⏳ ACCESS_UNAVAILABLE"
+  catalog_failed: "⏳ CATALOG_NOT_UPDATED"
+  save_failed: "⏳ SAVE_FAILED"
+  move_failed: "⏳ MOVE_FAILED"
+  duplicate_uncertain: "⏳ POSSIBLE_DUPLICATE"
+  quick_read_view_missing: "⏳ QUICK_READ_VIEW_MISSING"
+
+stop_condition: "任何write失敗時保留已成功步驟並明列未完成項目；不得以文字宣稱完成。"
