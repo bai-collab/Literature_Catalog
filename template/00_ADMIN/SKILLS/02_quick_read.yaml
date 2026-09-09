@@ -1,0 +1,52 @@
+name: "quick_read"
+version: "1.1"
+purpose: "Stage 1：以Research Fit為核心做淺讀，判斷是否值得升級；不是全文摘要。輸出 HTML 正式原檔與其 PDF 閱讀版。"
+
+inputs:
+  - "原始PDF或官方全文"
+  - "Paper Identity與RLC分類"
+
+three_questions:
+  - "這篇跟我的研究有什麼關係？"
+  - "它補充、修正或挑戰了我目前什麼理解？"
+  - "我實際可以把它用在論文哪裡？"
+
+procedure:
+  - "先讀Abstract、Introduction、Method/Study Design、Results、Limitations/Discussion、重要表圖；需要判斷數據時回到原始表圖。"
+  - "先回答研究什麼、為何研究、怎麼做，再選3–5個最重要發現。"
+  - "所有數字需保留原文位置；找不到位置不得寫精確數字。"
+  - "區分✅作者/結果明確支持、⚠️研究助理推論、❓本文未回答、❗來源/結果衝突。"
+  - "若出現比較性語句，只描述實際比較，不在Quick Read推導因果。"
+  - "指出最值得回原文看的頁碼/表/圖。"
+  - "評估Research Fit 1–5、Evidence Strength、建議Role與是否升級。"
+
+output_contract:
+  format: "內容以單一 self-contained HTML 為正式來源；繁中、手機/桌機易讀、內嵌CSS、無外部CDN/JS。"
+  artifacts:
+    source_html: "{PaperID}_QUICK_READ.html；正式 Quick Read 來源檔。"
+    view_pdf: "{PaperID}_QUICK_READ_VIEW.pdf；由同一 HTML 直接渲染的固定版面閱讀檔。"
+    equivalence_rule: "PDF 僅為 HTML 的 rendered view，不得另行改寫、增刪或重新摘要內容。"
+  sections:
+    - "基本資料＋30秒一句話"
+    - "研究什麼／為何研究／怎麼做"
+    - "最重要3–5個發現與關鍵證據"
+    - "三個Research Fit問題"
+    - "✅支持／❗挑戰／➕新概念／❓未回答"
+    - "論文章節用途"
+    - "限制與不可過度解讀"
+    - "最值得回原文看的頁碼／表／圖"
+    - "Research Fit、Evidence Strength、Role、升級建議"
+
+save:
+  - "HTML 正式原檔與 QUICK_READ_VIEW.pdf 均存回同一 Paper Folder；不得覆寫原始 PDF。"
+  - "Catalog：Quick_Read_Source_Link 指向 HTML；Quick_Read_Link 指向 QUICK_READ_VIEW.pdf。"
+  - "同步更新 Research_Fit、Evidence_Strength、Core_Finding、Main_Limitation、Status=QUICK_READ、Last_Updated。"
+
+quality_gate:
+  - "是否把摘要語氣當成實驗證據？"
+  - "是否有無來源數字？"
+  - "是否把相關/架構差異寫成因果？"
+  - "是否清楚說明這篇跟研究的實際關係？"
+  - "HTML 與 PDF 是否內容等價，且 PDF render 無裁切、重疊、缺字或破損？"
+
+stop_condition: "完成 HTML source、PDF view 與 Catalog 雙連結更新並驗證後停止；等待 Human Gate，不得自行進 Stage 2。"
